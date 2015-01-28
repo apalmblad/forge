@@ -1,12 +1,8 @@
-require 'guard'
-require 'guard/guard'
+require 'guard/compat/plugin'
 
-module Guard
-  class ForgeAssets < ::Guard::Guard
+module ::Guard
+  class ForgeAssets < Plugin
 
-    def initialize(watchers=[], options={})
-      super
-    end
 
     def start
       UI.info "Building all assets"

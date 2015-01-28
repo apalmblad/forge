@@ -1,5 +1,5 @@
 require 'guard'
-require 'guard/guard'
+require 'guard/commander'
 
 module Forge
   module Guard
@@ -13,10 +13,11 @@ module Forge
       @additional_guards << block
     end
 
-    def self.start(project, task, options={}, livereload={})
+    def self.start( project, task, options={}, livereload={})
       @project = project
       @task = task
-      @builder = Builder.new(project)
+      @builder = Builder.new( project)
+      daemonize = options.delete( :daemonize )
 
       options_hash = ""
       options.each do |k,v|
@@ -28,19 +29,19 @@ module Forge
       config_file = @project.config_file.gsub(/#{@project.root}\//, '')
 
       guardfile_contents = %Q{
-        guard 'forgeconfig'#{options_hash} do
+        guard :forge_config #{options_hash} do
           watch("#{config_file}")
         end
-        guard 'forgeassets' do
+        guard :forge_assets do
           watch(%r{#{assets_path}/javascripts/*})
           watch(%r{#{assets_path}/stylesheets/*})
           watch(%r{#{assets_path}/images/*})
         end
-        guard 'forgetemplates' do
+        guard :forge_templates do
           watch(%r{#{source_path}/templates/*})
           watch(%r{#{source_path}/partials/*})
         end
-        guard 'forgefunctions' do
+        guard :forge_functions do
           watch(%r{#{source_path}/functions/*})
           watch(%r{#{source_path}/includes/*})
         end
@@ -48,7 +49,7 @@ module Forge
 
       if @project.config[:livereload]
         guardfile_contents << %Q{
-          guard 'livereload' do
+          guard :livereload do
             watch(%r{#{source_path}/*})
           end
         }
@@ -58,7 +59,7 @@ module Forge
         result = block.call(options, livereload)
         guardfile_contents << result unless result.nil?
       end
-      ::Guard.start({ :guardfile_contents => guardfile_contents }).join
+      ::Guard.start( guardfile_contents: guardfile_contents, no_interactions: daemonize )
     end
   end
 end

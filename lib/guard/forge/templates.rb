@@ -1,11 +1,7 @@
-require 'guard'
-require 'guard/guard'
+require 'guard/compat/plugin'
 
 module Guard
-  class ForgeTemplates < ::Guard::Guard
-    def initialize(watchers=[], options={})
-      super
-    end
+  class ForgeTemplates < Plugin
 
     def start
       UI.info "Copying templates over"

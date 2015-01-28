@@ -4,6 +4,7 @@ require 'guard/forge/assets'
 require 'guard/forge/config'
 require 'guard/forge/templates'
 require 'guard/forge/functions'
+require 'forge/guard'
 
 module Forge
   class CLI < Thor
@@ -18,7 +19,7 @@ module Forge
       theme = {}
       theme[:name] = dir
 
-      project = Forge::Project.create(dir, theme, self)
+      Forge::Project.create(dir, theme, self)
     end
 
     desc "link PATH", "Create a symbolic link to the compilation directory"
@@ -35,14 +36,16 @@ module Forge
     desc "watch", "Start watch process"
     long_desc "Watches the source directory in your project for changes, and reflects those changes in a compile folder"
     method_option :config, :type => :string, :desc => "Name of alternate config file"
+    method_option :daemonize, :aliases => "-d", :desc => "Run as daemon"
+
     def watch
       project = Forge::Project.new('.', self, nil, options[:config])
 
       # Empty the build directory before starting up to clean out old files
       FileUtils.rm_rf project.build_path
       FileUtils.mkdir_p project.build_path
-
-      Forge::Guard.start(project, self)
+      Process.daemon() if options.daemonize?
+      Forge::Guard.start(project, self, daemonize: options.daemonize? )
     end
 
     desc "build DIRECTORY", "Build your theme into specified directory"

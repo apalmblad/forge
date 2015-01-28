@@ -1,11 +1,7 @@
-require 'guard'
-require 'guard/guard'
+require 'guard/compat/plugin'
 
 module Guard
-  class ForgeFunctions < ::Guard::Guard
-    def initialize(watchers=[], options={})
-      super
-    end
+  class ForgeFunctions < Plugin
 
     def start
       UI.info "Copying functions over"

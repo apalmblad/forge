@@ -1,11 +1,7 @@
-require 'guard'
-require 'guard/guard'
+require 'guard/compat/plugin'
 
 module Guard
-  class ForgeConfig < ::Guard::Guard
-    def initialize(watchers=[], options={})
-      super
-    end
+  class ForgeConfig < Plugin
 
     # Called on Ctrl-Z signal
     # This method should be mainly used for "reload" (really!) actions like reloading passenger/spork/bundler/...
